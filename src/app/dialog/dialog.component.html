@@ -1,0 +1,18 @@
+<h1 *ngIf="this.data.categoria!==' '&& this.data.anno !== null && this.ret[0]!==0">
+    Nel {{this.data.anno}} hai speso {{this.ret[0]}}€ per la categoria {{this.data.categoria}}
+  </h1>
+  <h1 *ngIf="this.data.categoria!==' '&& this.data.anno !== null && this.ret[0]===0">
+    Non hai avuto spese nel {{this.data.anno}} per la categoria {{this.data.categoria}}
+  </h1>
+  <h1 *ngIf="this.data.categoria === ' ' && this.data.anno !== null">
+    Nel {{this.data.anno}} hai speso 
+    <ul>
+      <li *ngFor="let item1 of categorie; let i = index">
+        per la categoria {{ item1 }} : {{ this.ret[i] }}€
+      </li>
+    </ul>
+    Per un totale di {{this.totale}}€
+  </h1>
+  <!--h3 *ngIf="this.data.categoria!==''&& this.data.anno !== null">
+    Size di ret: {{this.ret.length}}
+  </h3-->

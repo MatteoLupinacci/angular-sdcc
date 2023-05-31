@@ -1,0 +1,22 @@
+.example-spacer {
+    flex: 1 1 auto;
+  }
+  
+  .container {
+      background-image: url('https://www.patriotsoftware.com/wp-content/uploads/2020/02/why-accounting-is-important-business.jpg');
+      background-size: cover;
+      background-position: bottom;
+      max-width: 100%;
+      width: 100%;
+      max-height: 55%;
+      height: 55%;
+    }
+  
+  .bottone{
+    max-width: 100%;
+    width: 100%;
+    background-color: beige;
+    max-height: 25%;
+    height: 25%;
+    justify-content: center;
+  }
