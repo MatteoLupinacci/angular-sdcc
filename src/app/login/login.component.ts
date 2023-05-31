@@ -8,17 +8,12 @@ import { user } from '../entity/user';
 })
 export class LoginComponent implements OnInit {
 
-  logged = false;
   userInfo!: user;
 
   constructor() { }
 
   async ngOnInit() {
     this.userInfo = await this.getUserInfo();
-  }
-
-  login() {
-    this.logged=true;
   }
 
   async getUserInfo() {
