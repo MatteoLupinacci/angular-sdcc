@@ -1,194 +1,197 @@
 <mat-toolbar color="primary">
-    <button mat-icon-button (click)="drawer.toggle()" class="example-icon" aria-label="Example icon-button with menu icon">
-      <mat-icon>menu</mat-icon>
-    </button>
-    <span>Contabilità Personale</span>
-    <span class="example-spacer"></span>
-    <button mat-icon-button routerLink="/report">
-      <mat-icon>donut_small</mat-icon>
-    </button>
-    <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
-      <mat-icon>share</mat-icon>
-    </button>
+  <button mat-icon-button (click)="drawer.toggle()" class="example-icon"
+    aria-label="Example icon-button with menu icon">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>Contabilità Personale</span>
+  <span class="example-spacer"></span>
+  <button mat-icon-button routerLink="/report">
+    <mat-icon>donut_small</mat-icon>
+  </button>
+  <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
+    <mat-icon>share</mat-icon>
+  </button>
 </mat-toolbar>
-  
-  
-  <mat-drawer-container class="example-container" autosize>
-    
-    <mat-drawer #drawer class="example-sidenav" mode="side">
-      <button mat-raised-button color="primary" routerLink="/report">
-        <mat-icon>cloud_download</mat-icon>
-        Report
-      </button>
-    </mat-drawer>
-  
-    <div class="example-sidenav-content">
-      <div class="content">
-        <div class="grid-container">
-          <div class="grid-item">
-            <div class="form-container">
-              <form [formGroup]="documentForm">
-                <mat-stepper orientation="vertical" class="large-form">
-                  <mat-step>
-                    <ng-template matStepLabel>Seleziona il file da caricare</ng-template>
-                    <ng-template matStepContent>
-                      <div class="form-group">
-                        <input type="file" id="file" formControlName="file" (change)="handleFileInput($event)"
-                          class="form-control-file">
-                        <div *ngIf="documentForm.controls['file'].invalid && documentForm.controls['file'].touched"
-                          class="invalid-feedback">
-                          Selezionare un file
-                        </div>
-                      </div>
-                      <button mat-button matStepperNext>Next</button>
-                    </ng-template>
-                  </mat-step>
-        
-                  <mat-step>
-                    <ng-template matStepLabel>Fornisci una descrizione</ng-template>
-                    <ng-template matStepContent>
-                      <div class="form-group">
-                        <label for="descrizione">Descrizione:</label>
-                        <input type="text" id="descrizione" formControlName="descrizione" class="form-control">
-                        <div
-                          *ngIf="documentForm.controls['descrizione'].invalid && documentForm.controls['descrizione'].touched"
-                          class="invalid-feedback">
-                          Inserire una descrizione
-                        </div>
-                      </div>
-                      <button mat-button matStepperPrevious>Back</button>
-                      <button mat-button matStepperNext>Next</button>
-                    </ng-template>
-                  </mat-step>
-        
-                  <mat-step>
-                    <ng-template matStepLabel>Specifica l'importo</ng-template>
+
+<mat-drawer-container class="example-container" autosize>
+
+  <mat-drawer #drawer class="example-sidenav" mode="side">
+    <a mat-flat-button routerLink="/report" style="margin-top: 8%;">
+      <mat-icon>donut_small</mat-icon>
+      Report
+    </a>
+    <mat-divider></mat-divider>
+    <a mat-flat-button routerLink="/home" style="margin-top: 8%;">
+      <mat-icon>home</mat-icon>
+      Home
+    </a>
+  </mat-drawer>
+
+  <div class="example-sidenav-content">
+    <div class="content">
+      <div class="grid-container">
+        <div class="grid-item">
+          <div class="form-container">
+            <form [formGroup]="documentForm">
+              <mat-stepper orientation="vertical" class="large-form">
+                <mat-step>
+                  <ng-template matStepLabel>Seleziona il file da caricare</ng-template>
+                  <ng-template matStepContent>
                     <div class="form-group">
-                      <label for="importo">Importo:</label>
-                      <input type="number" id="importo" formControlName="importo" class="form-control">
-                      <div *ngIf="documentForm.controls['importo'].invalid && documentForm.controls['importo'].touched"
+                      <input type="file" id="file" formControlName="file" (change)="handleFileInput($event)"
+                        class="form-control-file">
+                      <div *ngIf="documentForm.controls['file'].invalid && documentForm.controls['file'].touched"
                         class="invalid-feedback">
-                        Inserire un importo valido
+                        Selezionare un file
                       </div>
                     </div>
-                    <button mat-button matStepperPrevious>Back</button>
                     <button mat-button matStepperNext>Next</button>
-                  </mat-step>
-        
-                  <mat-step>
-                    <ng-template matStepLabel>Specifica l'anno fiscale</ng-template>
+                  </ng-template>
+                </mat-step>
+
+                <mat-step>
+                  <ng-template matStepLabel>Fornisci una descrizione</ng-template>
+                  <ng-template matStepContent>
                     <div class="form-group">
-                      <label for="anno">Anno</label>
-                      <input type="number" id="anno" formControlName="anno" class="form-control">
-                      <div *ngIf="documentForm.controls['anno'].invalid && documentForm.controls['anno'].touched"
+                      <label for="descrizione">Descrizione:</label>
+                      <input type="text" id="descrizione" formControlName="descrizione" class="form-control">
+                      <div
+                        *ngIf="documentForm.controls['descrizione'].invalid && documentForm.controls['descrizione'].touched"
                         class="invalid-feedback">
-                        Inserire un anno valido
+                        Inserire una descrizione
                       </div>
                     </div>
                     <button mat-button matStepperPrevious>Back</button>
                     <button mat-button matStepperNext>Next</button>
-                  </mat-step>
-        
-                  <mat-step>
-                    <ng-template matStepLabel>Seleziona un tag per la classificazione</ng-template>
-                    <div class="form-group">
-                      <label for="categoria">Tag:</label>
-                      <select id="categoria" formControlName="tags" class="form-control">
-                        <option value=""></option>
-                        <option value="Casa">Casa</option>
-                        <option value="Tasse e Imposte">Tasse e Imposte</option>
-                        <option value="Spese sanitarie">Spese sanitarie</option>
-                        <option value="Spese alimentari">Spese alimentari</option>
-                        <option value="Istruzione">Istruzione</option>
-                        <option value="Sport">Sport</option>
-                        <option value="Trasporti">Trasporti</option>
-                        <option value="Cura personale">Cura personale</option>
-                        <option value="Viaggi">Viaggi</option>
-                        <option value="Attività ricreative">Attività Ricreative</option>
-                        <option value="Altro">Altro</option>
-                      </select>
+                  </ng-template>
+                </mat-step>
+
+                <mat-step>
+                  <ng-template matStepLabel>Specifica l'importo</ng-template>
+                  <div class="form-group">
+                    <label for="importo">Importo:</label>
+                    <input type="number" id="importo" formControlName="importo" class="form-control">
+                    <div *ngIf="documentForm.controls['importo'].invalid && documentForm.controls['importo'].touched"
+                      class="invalid-feedback">
+                      Inserire un importo valido
                     </div>
-                    <button mat-button matStepperPrevious>Back</button>
-                    <button mat-button matStepperNext>Next</button>
-                  </mat-step>
-        
-                  <mat-step>
-                    <ng-template matStepLabel>Carica il documento</ng-template>
-                    <button mat-button (click)="onSubmit()">
-                      <mat-icon>cloud_upload</mat-icon>
-                      Aggiungi
-                    </button>
-                  </mat-step>
-                </mat-stepper>
-              </form>
-            </div>
+                  </div>
+                  <button mat-button matStepperPrevious>Back</button>
+                  <button mat-button matStepperNext>Next</button>
+                </mat-step>
+
+                <mat-step>
+                  <ng-template matStepLabel>Specifica l'anno fiscale</ng-template>
+                  <div class="form-group">
+                    <label for="anno">Anno</label>
+                    <input type="number" id="anno" formControlName="anno" class="form-control">
+                    <div *ngIf="documentForm.controls['anno'].invalid && documentForm.controls['anno'].touched"
+                      class="invalid-feedback">
+                      Inserire un anno valido
+                    </div>
+                  </div>
+                  <button mat-button matStepperPrevious>Back</button>
+                  <button mat-button matStepperNext>Next</button>
+                </mat-step>
+
+                <mat-step>
+                  <ng-template matStepLabel>Seleziona un tag per la classificazione</ng-template>
+                  <div class="form-group">
+                    <label for="categoria">Tag:</label>
+                    <select id="categoria" formControlName="tags" class="form-control">
+                      <option value=""></option>
+                      <option value="Casa">Casa</option>
+                      <option value="Tasse e Imposte">Tasse e Imposte</option>
+                      <option value="Spese sanitarie">Spese sanitarie</option>
+                      <option value="Spese alimentari">Spese alimentari</option>
+                      <option value="Istruzione">Istruzione</option>
+                      <option value="Sport">Sport</option>
+                      <option value="Trasporti">Trasporti</option>
+                      <option value="Cura personale">Cura personale</option>
+                      <option value="Viaggi">Viaggi</option>
+                      <option value="Attività ricreative">Attività Ricreative</option>
+                      <option value="Altro">Altro</option>
+                    </select>
+                  </div>
+                  <button mat-button matStepperPrevious>Back</button>
+                  <button mat-button matStepperNext>Next</button>
+                </mat-step>
+
+                <mat-step>
+                  <ng-template matStepLabel>Carica il documento</ng-template>
+                  <button mat-button (click)="onSubmit()">
+                    <mat-icon>cloud_upload</mat-icon>
+                    Aggiungi
+                  </button>
+                </mat-step>
+              </mat-stepper>
+            </form>
           </div>
-        
-          <div class="grid-item">
-            <div class="grafico">
-              <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
-                [legend]="barChartLegend" [type]="barChartType">
-              </canvas>
-            </div>
+        </div>
+
+        <div class="grid-item">
+          <div class="grafico">
+            <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
+              [legend]="barChartLegend" [type]="barChartType">
+            </canvas>
           </div>
-        
-          <div class="grid-item">
-            <div id="barraDiRicerca">
-              <mat-card class="example-card" style="background-color: rgba(255, 255, 255, 0.924)">
-                <div class="row">
-                  <h2>Seleziona la categoria</h2>
-                  <mat-form-field appearance="outline" floatLabel="always">
-                    <mat-label>Categoria</mat-label>
-                    <mat-select [(value)]="currentCat">
-                      <mat-option *ngFor="let cat of categorie" [value]="cat">{{cat}}</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                  <h2>Seleziona l'anno</h2>
-                  <mat-form-field appearance="outline">
-                    <mat-label>Anno</mat-label>
-                    <input type="number" [formControl]="annoRic" matInput placeholder="Anno">
-                  </mat-form-field>
-                  <h2>&nbsp;</h2>
-                  <button mat-raised-button (click)="openDialog()" color="warn">CERCA</button>
-                </div>
-              </mat-card>
-            </div>
-          </div>
-        
-          <div class="grid-item">
-            <div class="table-container">
-              <div class="mat-elevation-z8">
-                <table mat-table [dataSource]="dataSource" matSort>
-            
-                  <ng-container matColumnDef="id">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Nome </th>
-                    <td mat-cell *matCellDef="let row"> {{row}} </td>
-                  </ng-container>
-        
-                  <ng-container matColumnDef="Azioni">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
-                    <td mat-cell *matCellDef="let row">
-                      <button mat-raised-button color="primary" (click)="downloadBlobs(row)">
-                        <mat-icon>cloud_download</mat-icon>
-                        Download
-                      </button>
-                      <button style="margin-left: 3px;" mat-raised-button color="warn" (click)="deleteBlob(row)">
-                        <mat-icon>delete</mat-icon>
-                        Delete
-                      </button>
-                    </td>
-                  </ng-container>
-        
-                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                </table>
-                <mat-paginator [pageSizeOptions]="[5, 10, 15]" aria-label="Select page of users"></mat-paginator>
+        </div>
+
+        <div class="grid-item">
+          <div id="barraDiRicerca">
+            <mat-card class="example-card" style="background-color: rgba(255, 255, 255, 0.924)">
+              <div class="row">
+                <h2 style="margin-top: 2%;text-align: center;">Seleziona la categoria</h2>
+                <mat-form-field class="form-ricerca" appearance="outline" floatLabel="always">
+                  <mat-label>Categoria</mat-label>
+                  <mat-select [(value)]="currentCat">
+                    <mat-option *ngFor="let cat of categorie" [value]="cat">{{cat}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <h2 style="text-align: center;">Seleziona l'anno</h2>
+                <mat-form-field class="form-ricerca" appearance="outline">
+                  <mat-label>Anno</mat-label>
+                  <input type="number" [formControl]="annoRic" matInput placeholder="Anno">
+                </mat-form-field>
               </div>
+              <button style="width: fit-content; margin-left: 40%; margin-bottom: 2%;" mat-raised-button
+                (click)="openDialog()" color="warn">CERCA</button>
+            </mat-card>
+          </div>
+        </div>
+
+        <div class="grid-item" style="height: min-content;">
+          <div class="table-container">
+            <div class="mat-elevation-z8">
+              <table mat-table [dataSource]="dataSource" matSort>
+
+                <ng-container matColumnDef="id">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Nome </th>
+                  <td mat-cell *matCellDef="let row"> {{row}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="Azioni">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+                  <td mat-cell *matCellDef="let row">
+                    <button mat-raised-button color="primary" (click)="downloadBlobs(row)">
+                      <mat-icon>cloud_download</mat-icon>
+                      Download
+                    </button>
+                    <button style="margin-left: 3px;" mat-raised-button color="warn" (click)="deleteBlob(row)">
+                      <mat-icon>delete</mat-icon>
+                      Delete
+                    </button>
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table>
+              <mat-paginator [pageSizeOptions]="[5, 10, 15]" aria-label="Select page of users"></mat-paginator>
             </div>
           </div>
         </div>
       </div>
     </div>
-  
-  </mat-drawer-container>
-  
+  </div>
+
+</mat-drawer-container>

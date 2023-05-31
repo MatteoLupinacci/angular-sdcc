@@ -16,10 +16,15 @@
 <mat-drawer-container class="example-container" autosize>
 
   <mat-drawer #drawer class="example-sidenav" mode="side">
-    <button mat-raised-button color="primary" routerLink="/report">
-      <mat-icon>cloud_download</mat-icon>
+    <a mat-flat-button routerLink="/home" style="margin-top: 8%;">
+      <mat-icon>home</mat-icon>
+      Home
+    </a>
+    <mat-divider></mat-divider>
+    <a mat-flat-button routerLink="/report" style="margin-top: 8%;">
+      <mat-icon>donut_small</mat-icon>
       Report
-    </button>
+    </a>
   </mat-drawer>
 
   <div>
