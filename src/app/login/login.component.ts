@@ -9,7 +9,7 @@ export class LoginComponent implements OnInit {
 
   logged = false;
   user: string = "matteolupinacci171@gmail.com";
-
+  password: string = "matteo";
   constructor() { }
 
   ngOnInit(): void {
