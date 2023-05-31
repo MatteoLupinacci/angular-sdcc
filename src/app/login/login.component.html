@@ -1,9 +1,9 @@
 <mat-toolbar color="primary">
     <span>Contabilità Personale</span>
     <span class="example-spacer"></span>
-    <a (click)="this.logged=true" href="/.auth/login/google">Login with Google
+    <button mat-raised-button (click)="login()" href="/.auth/login/google">Login with Google
         <mat-icon>login</mat-icon>
-    </a>
+    </button>
     <!--button mat-raised-button (click)="this.logged=true">Login with Google
         <mat-icon>login</mat-icon>
     </button-->

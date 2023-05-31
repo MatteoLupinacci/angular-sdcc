@@ -16,7 +16,6 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    throw new Error('Method not implemented.');
+    this.logged=true;
   }
-
 }
