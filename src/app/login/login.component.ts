@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { user } from '../entity/user';
 
 @Component({
   selector: 'app-login',
@@ -8,14 +9,27 @@ import { Component, OnInit } from '@angular/core';
 export class LoginComponent implements OnInit {
 
   logged = false;
-  user: string = "matteolupinacci171@gmail.com";
-  password: string = "matteooo";
+  userInfo!: user;
+
   constructor() { }
 
-  ngOnInit(): void {
+  async ngOnInit() {
+    this.userInfo = await this.getUserInfo();
   }
 
   login() {
     this.logged=true;
+  }
+
+  async getUserInfo() {
+    try {
+      const response = await fetch('/.auth/me');
+      const payload = await response.json();
+      const { clientPrincipal } = payload;
+      return clientPrincipal;
+    } catch (error) {
+      console.error('No profile could be found');
+      return undefined;
+    }
   }
 }

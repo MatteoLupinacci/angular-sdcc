@@ -1,7 +1,7 @@
 <mat-toolbar color="primary">
     <span>Contabilità Personale</span>
     <span class="example-spacer"></span>
-    <button mat-raised-button href="/.auth/login/google?" (click)="login()" >Login with Google
+    <button mat-raised-button href="/.auth/login/google?">Login with Google
         <mat-icon>login</mat-icon>
     </button>
     <!--button mat-raised-button (click)="this.logged=true">Login with Google
@@ -12,7 +12,7 @@
   <div class = "contenuto" *ngIf="this.logged">
     <div class="bottone">
         <h2>
-            Benvenuto {{this.user}} vai alla home page per gestire la tua contabilità
+            Benvenuto {{this.userInfo.userDetails}} vai alla home page per gestire la tua contabilità
         </h2>
         <button mat-raised-button routerLink="/home">Vai alla home
             <mat-icon>home</mat-icon>
