@@ -21,7 +21,7 @@
 
 <div class="contenuto">
     <div class="bottone">
-        <button mat-raised-button routerLink="/home" *ngIf="this.userInfo" color="primary">Vai alla home
+        <button (click)="this.registraUtente()" mat-raised-button routerLink="/home" *ngIf="this.userInfo" color="primary">Vai alla home
             <mat-icon>home</mat-icon>
         </button>
     </div>

@@ -8,6 +8,9 @@ import { MatPaginator } from '@angular/material/paginator';
 import { ChartOptions, ChartType } from 'chart.js';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from '../dialog/dialog.component';
+import { user } from '../entity/user';
+import { Utente } from '../entity/Utente';
+import { UtenteService } from '../services/utente.service';
 
 @Component({
   selector: 'app-home',
@@ -19,6 +22,7 @@ export class HomeComponent implements OnInit {
 
   sas: string = "sp=racwdli&st=2023-05-15T21:56:40Z&se=2023-10-01T05:56:40Z&spr=https&sv=2022-11-02&sr=c&sig=lu3kf0SOjckYI7V40HqM4z0Ns0eQ5NxcE8sjx%2FN%2BoaU%3D";
   blob: any;
+  user!:user;
 
   documentForm: FormGroup = new FormGroup({
     file: new FormControl('', Validators.required),
@@ -28,7 +32,7 @@ export class HomeComponent implements OnInit {
     tags: new FormControl('', Validators.required)
   });
 
-  categorie: String[] = ["Casa","Tasse e Imposte","Spese sanitarie","Spese alimentari","Istruzione","Sport","Trasporti","Cura personale"
+  categorie: String[] = [" ","Casa","Tasse e Imposte","Spese sanitarie","Spese alimentari","Istruzione","Sport","Trasporti","Cura personale"
   ,"Viaggi","Attività ricreative","Altro"];
   currentCat: string = ' ';
   annoRic = new FormControl("2023",[]);  //approccio model driven
@@ -57,11 +61,12 @@ export class HomeComponent implements OnInit {
   dataSource: MatTableDataSource<String>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor(private blobService: BlobService, private databaseService: DatabaseService, private dialog: MatDialog) {
+  constructor(private blobService: BlobService, private databaseService: DatabaseService, private utenteService:UtenteService, private dialog: MatDialog) {
     this.dataSource = new MatTableDataSource();
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.user = await this.utenteService.getUserInfo();
     this.reloadBlobs();
     this.speseTotaliPerAnno();
   }
@@ -75,35 +80,42 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  onSubmit() {
-    //upload documento
-    let nome = this.documentForm.value.file.substring(12);
-    this.blobService.uploadBlob(this.blob, nome, this.sas, () => {
-      this.reloadBlobs();
-    })
-    let documento: Documento = new Documento(nome, this.documentForm.value.descrizione, this.documentForm.value.importo, this.documentForm.value.anno, this.documentForm.value.tags);
-    this.databaseService.aggiungiDocumento(documento).subscribe({
-      next: () => {
-        window.alert("documento ok sul db");
-      },
-      error: (err) => {
-        console.log(err);
-      }
-    })
-  }
-
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
   }
 
-  private reloadBlobs() {
+  openDialog() {
+    this.dialog.open(DialogComponent, {
+      width:'50%',
+      data: {
+        categoria: this.currentCat,
+        anno: this.annoRic.value
+      },
+    });
+  }
+
+  reloadBlobs() {
     this.speseTotaliPerAnno();
-    this.blobService.getBlobsName(this.sas).then(list => {
+    this.blobService.getBlobsName(this.sas,this.user.userDetails).then(list => {
       this.dataSource.data = list;
     })
   }
 
+  onSubmit() {
+    this.uploadBlob();
+    this.addEntryDB();
+  }
+
+  uploadBlob() {
+    let nome = this.documentForm.value.file.substring(12);
+    nome = this.user.userDetails+"/"+nome;  //IL NOME è DEL TIPO utente/nomeBlob
+    this.blobService.uploadBlob(this.blob, nome, this.sas, () => {
+      this.reloadBlobs();
+    })
+  }
+
   downloadBlobs(name: string) {
+    //name = this.user.userDetails+"/"+name;  //IL NOME è DEL TIPO utente/nomeBlob
     this.blobService.downloadBlob(name, this.sas, blob => {
       let url = window.URL.createObjectURL(blob);
       window.open(url);
@@ -111,11 +123,18 @@ export class HomeComponent implements OnInit {
   }
 
   deleteBlob(name: string) {
-    this.databaseService.deleteDocumento(name).subscribe({
+    //let nome = this.user.userDetails+"/"+name;  //IL NOME è DEL TIPO utente/nomeBlob
+    let i = name.indexOf("/");
+    let nome = name.substring(i+1);
+    this.deleteEntryDB(nome);
+    this.blobService.deleteBlob(this.sas, name, () => {
+      this.reloadBlobs();
+    })
+  }
+
+  async deleteEntryDB(name:string) {
+    (await this.databaseService.deleteDocumento(name)).subscribe({
       next: () => {
-        this.blobService.deleteBlob(this.sas, name, () => {
-          this.reloadBlobs();
-        })
       },
       error: (err) => {
         console.log(err);
@@ -123,9 +142,22 @@ export class HomeComponent implements OnInit {
     })
   }
 
-  speseTotaliPerAnno(): number[] {
+  addEntryDB() {
+    let nome = this.documentForm.value.file.substring(12);
+    let documento: Documento = new Documento(nome, new Utente(this.user.userDetails),this.documentForm.value.descrizione, this.documentForm.value.importo, this.documentForm.value.anno, this.documentForm.value.tags);
+    this.databaseService.aggiungiDocumento(documento).subscribe({
+      next: () => {
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
+  }
+
+  async speseTotaliPerAnno(): Promise<number[]> {
+    let utente = await this.utenteService.getUtente();
     let ret:any[] = [];
-    this.databaseService.spesePerAnno(2020, 2023).subscribe({
+    this.databaseService.spesePerAnno(2020, 2023,utente).subscribe({
       next: (res:any[]) => {
         this.barChartData = [
           { data: res,
@@ -141,15 +173,5 @@ export class HomeComponent implements OnInit {
       }
     });
     return ret;
-  }
-
-  openDialog() {
-    this.dialog.open(DialogComponent, {
-      width:'50%',
-      data: {
-        categoria: this.currentCat,
-        anno: this.annoRic.value
-      },
-    });
   }
 }

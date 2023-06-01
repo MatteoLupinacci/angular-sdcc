@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { user } from '../entity/user';
 import { ChartOptions, ChartType } from 'chart.js';
+import { UtenteService } from '../services/utente.service';
+import { Utente } from '../entity/Utente';
 
 @Component({
   selector: 'app-login',
@@ -9,39 +11,23 @@ import { ChartOptions, ChartType } from 'chart.js';
 })
 export class LoginComponent implements OnInit {
 
-  doughnutChartData: any[] = [10,20,30,40];
-  doughnutChartLegend = true;
-  doughnutChartType: ChartType = 'doughnut';
-  doughnutChartLabels = ['Spese alimentari','Istruzione','Sport','Trasporti'];
-  doughnutChartOptions: ChartOptions = {
-   responsive: true,
-     plugins: {
-       legend: {
-         position: 'top',
-       },
-       title: {
-         display: true,
-         text: 'Spese totali per le categorie'
-       }
-     }
- };
   userInfo!: user;
 
-  constructor() { }
+  constructor(private utenteService: UtenteService) { }
 
   async ngOnInit() {
-    this.userInfo = await this.getUserInfo();
+    this.userInfo = await this.utenteService.getUserInfo();
   }
 
-  async getUserInfo() {
-    try {
-      const response = await fetch('/.auth/me');
-      const payload = await response.json();
-      const { clientPrincipal } = payload;
-      return clientPrincipal;
-    } catch (error) {
-      console.error('No profile could be found');
-      return undefined;
-    }
+  async registraUtente(){
+    
+    let utente = new Utente(this.userInfo.userDetails);
+    this.utenteService.registraUtente(utente).subscribe({
+      next: (res) => {
+      },
+      error: (err:any) => {
+        console.error(err);
+      }
+    });
   }
 }

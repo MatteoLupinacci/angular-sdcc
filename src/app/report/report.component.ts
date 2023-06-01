@@ -5,6 +5,8 @@ import { Documento } from '../entity/Documento';
 import { BlobService } from '../services/blob.service';
 import { DatabaseService } from '../services/database.service';
 import { ChartOptions, ChartType } from 'chart.js';
+import { user } from '../entity/user';
+import { UtenteService } from '../services/utente.service';
 
 @Component({
   selector: 'app-report',
@@ -65,8 +67,9 @@ export class ReportComponent {
   
   sas: string = "sp=racwdli&st=2023-05-15T21:56:40Z&se=2023-10-01T05:56:40Z&spr=https&sv=2022-11-02&sr=c&sig=lu3kf0SOjckYI7V40HqM4z0Ns0eQ5NxcE8sjx%2FN%2BoaU%3D";
   blob: any;
+  user!:user;
 
-  categorie: String[] = ["","Casa","Tasse e Imposte","Spese sanitarie","Spese alimentari","Istruzione","Sport","Trasporti","Cura personale"
+  categorie: String[] = [" ","Casa","Tasse e Imposte","Spese sanitarie","Spese alimentari","Istruzione","Sport","Trasporti","Cura personale"
   ,"Viaggi","Attività ricreative","Altro"];
   nome:FormControl = new FormControl("",[]);  //approccio model driven
   currentCat: string = ' ';
@@ -79,7 +82,8 @@ export class ReportComponent {
             "https://static.vecteezy.com/ti/vettori-gratis/t2/20586482-csv-file-formato-documento-colore-icona-vettore-illustrazione-vettoriale.jpg"];
   przMax:FormControl = new FormControl("5000",[]);  //approccio model driven
   
-  constructor(private databaseService:DatabaseService, private blobService:BlobService) { }
+  constructor(private databaseService:DatabaseService, private blobService:BlobService, private utenteService:UtenteService) { }
+
 
   selezionaImm(nome:string):string{
     const indexPunto = nome.indexOf(".");
@@ -101,15 +105,24 @@ export class ReportComponent {
     this.pageSlice=this.retRicerca.slice(startIndex,endIndex);
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.user = await this.utenteService.getUserInfo();
     this.mostraDocumenti();
     this.speseTotaliPerCategoria_Anno();
     this.speseTotaliPerCategoria();
     this.speseTotaliPerAnno();
   }
 
-  public mostraDocumenti() {
-    this.databaseService.mostraDocumenti().subscribe({
+  public downloadBlobs(name: string) {
+    name = this.user.userDetails+"/"+name;  //IL NOME è DEL TIPO utente/nomeBlob
+    this.blobService.downloadBlob(name, this.sas, blob => {
+      let url = window.URL.createObjectURL(blob);
+      window.open(url);
+    })
+  }
+
+  public async mostraDocumenti() {
+    (await this.databaseService.mostraDocumenti()).subscribe({
       next: (res) => {
         this.retRicerca = res;
         this.pageSlice = this.retRicerca.slice(0,4);
@@ -120,9 +133,10 @@ export class ReportComponent {
     });
   }
 
-  public speseTotaliPerCategoria(): number[] {
+  public async speseTotaliPerCategoria(): Promise<number[]> {
+    let utente = await this.utenteService.getUtente();
     let ret: any[] = [];
-    this.databaseService.spesePerCategoria(this.doughnutChartLabels).subscribe({
+    this.databaseService.spesePerCategoria(this.doughnutChartLabels,utente).subscribe({
       next: (res) => {
         this.doughnutChartData = [
           { data: res,
@@ -136,9 +150,10 @@ export class ReportComponent {
     return ret;
   }
 
-  public speseTotaliPerCategoria_Anno(): number[] {
+  public async speseTotaliPerCategoria_Anno(): Promise<number[]> {
+    let utente = await this.utenteService.getUtente();
     let ret: any[] = [];
-    this.databaseService.spesePerCategoria_Anno(2023,this.pieChartLabels).subscribe({
+    this.databaseService.spesePerCategoria_Anno(2023,this.pieChartLabels,utente).subscribe({
       next: (res) => {
         this.pieChartData = [
           { data: res,
@@ -152,9 +167,10 @@ export class ReportComponent {
     return ret;
   }
 
-  public speseTotaliPerAnno(): number[] {
+  public async speseTotaliPerAnno(): Promise<number[]> {
+    let utente = await this.utenteService.getUtente();
     let ret: any[] = [];
-    this.databaseService.spesePerAnno(2020, 2023).subscribe({
+    this.databaseService.spesePerAnno(2020, 2023,utente).subscribe({
       next: (res) => {
         this.polarChartData = [
           { data: res,
@@ -181,14 +197,8 @@ export class ReportComponent {
     return ret;
   }
 
-  public downloadBlobs(name: string) {
-    this.blobService.downloadBlob(name, this.sas, blob => {
-      let url = window.URL.createObjectURL(blob);
-      window.open(url);
-    })
-  }
-
-  public ricercaConFiltri(){
+  public async ricercaConFiltri(){
+    let utente = await this.utenteService.getUtente();
     let anno: any = parseInt(this.anno.value,10);
     let cat: any = this.currentCat;
     let prz: number = parseFloat(this.przMax.value);
@@ -198,7 +208,7 @@ export class ReportComponent {
       cat = null;
     if(prz === 0)
       prz = Number.MAX_VALUE;
-    this.databaseService.ricercaConFiltri(cat,anno,prz).subscribe({
+    this.databaseService.ricercaConFiltri(cat,anno,prz,utente).subscribe({
       next: (res) => {
         this.retRicerca = res;
         this.pageSlice = this.retRicerca.slice(0,12);

@@ -14,11 +14,12 @@ export class BlobService {
     .getContainerClient(this.containerName);
   }
 
-  public async getBlobsName(sas:string): Promise<string[]> {
+  public async getBlobsName(sas:string,utente:string): Promise<string[]> {
     let ret: string[] = [];
     let blobs = this.containerClient(sas).listBlobsFlat();
     for await (const blob of blobs){
-      ret.push(blob.name);
+      if(blob.name.startsWith(utente))
+        ret.push(blob.name);
     }
     return ret;
   }
@@ -47,12 +48,6 @@ export class BlobService {
     blockBlobClient.deleteBlob(name).then(() => {
       handler()
     })
-  }
-
-  public getBlobURL(sas:string, name: string): string{
-    let blockBlobClient = this.containerClient(sas);
-    let blob = blockBlobClient.getBlockBlobClient(name);
-    return blob.url;
   }
 
 }
