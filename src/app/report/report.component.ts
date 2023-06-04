@@ -84,7 +84,6 @@ export class ReportComponent {
   
   constructor(private databaseService:DatabaseService, private blobService:BlobService, private utenteService:UtenteService) { }
 
-
   selezionaImm(nome:string):string{
     const indexPunto = nome.indexOf(".");
     const est = nome.substring(indexPunto+1);
@@ -204,8 +203,9 @@ export class ReportComponent {
     let prz: number = parseFloat(this.przMax.value);
     if(this.anno.value === "" || this.anno.value === " ")
       anno = null;
-    if(this.currentCat === "" || this.currentCat === " ")
+    if(this.currentCat === "" || this.currentCat === " "){
       cat = null;
+    }
     if(prz === 0)
       prz = Number.MAX_VALUE;
     this.databaseService.ricercaConFiltri(cat,anno,prz,utente).subscribe({

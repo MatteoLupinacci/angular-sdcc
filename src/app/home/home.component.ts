@@ -38,10 +38,12 @@ export class HomeComponent implements OnInit {
   annoRic = new FormControl("2023",[]);  //approccio model driven
   currentPrz: number = 0;
   retRicerca: Documento[] = [];
-  pageSlice = this.retRicerca.slice(0,12);
+  pageSlice = this.retRicerca.slice(0,4);
 
+  barChartLegend = false;
+  barChartType: ChartType = 'bar';
   barChartData: any[] = [];
-  barChartLabels = ['2020','2021','2022', '2023'];
+  barChartLabels = ['2019','2020','2021','2022', '2023'];
   barChartOptions: ChartOptions = {
     responsive: true,
     plugins: {
@@ -50,12 +52,10 @@ export class HomeComponent implements OnInit {
       },
       title: {
         display: true,
-        text: 'Spese totali dal 2020 al 2023'
+        text: 'Spese totali dal 2019 al 2023'
       }
     }
   };
-  barChartLegend = false;
-  barChartType: ChartType = 'bar';
 
   displayedColumns: any[] = ['id', 'Azioni'];
   dataSource: MatTableDataSource<String>;
@@ -70,7 +70,7 @@ export class HomeComponent implements OnInit {
     this.reloadBlobs();
     this.speseTotaliPerAnno();
   }
-
+  
   handleFileInput(event: any) {
     const files: FileList = event.target.files;
     if (files && files.length > 0) {
@@ -157,13 +157,13 @@ export class HomeComponent implements OnInit {
   async speseTotaliPerAnno(): Promise<number[]> {
     let utente = await this.utenteService.getUtente();
     let ret:any[] = [];
-    this.databaseService.spesePerAnno(2020, 2023,utente).subscribe({
+    this.databaseService.spesePerAnno(2019, 2023,utente).subscribe({
       next: (res:any[]) => {
         this.barChartData = [
           { data: res,
-            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#FF9F40'], // Colori accesi per le barre
-            hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#FF9F40'], // Colori accesi per il mouse hover sulle barre
-            borderColor: ['#FF6384', '#36A2EB', '#FFCE56', '#FF9F40'],
+            backgroundColor: ['green','#FF6384', '#36A2EB', '#FFCE56', '#FF9F40'], // Colori accesi per le barre
+            hoverBackgroundColor: ['green','#FF6384', '#36A2EB', '#FFCE56', '#FF9F40'], // Colori accesi per il mouse hover sulle barre
+            borderColor: ['green','#FF6384', '#36A2EB', '#FFCE56', '#FF9F40'],
             borderWidth: 3 
           }
         ];

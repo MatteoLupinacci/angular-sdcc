@@ -50,4 +50,8 @@ export class BlobService {
     })
   }
 
+  public getUrl(name: string, sas:string):string{
+    const blobClient = this.containerClient(sas).getBlobClient(name);
+    return blobClient.url;
+  }
 }
