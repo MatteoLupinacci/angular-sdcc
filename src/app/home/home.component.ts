@@ -115,7 +115,6 @@ export class HomeComponent implements OnInit {
   }
 
   downloadBlobs(name: string) {
-    //name = this.user.userDetails+"/"+name;  //IL NOME è DEL TIPO utente/nomeBlob
     this.blobService.downloadBlob(name, this.sas, blob => {
       let url = window.URL.createObjectURL(blob);
       window.open(url);
@@ -123,7 +122,6 @@ export class HomeComponent implements OnInit {
   }
 
   deleteBlob(name: string) {
-    //let nome = this.user.userDetails+"/"+name;  //IL NOME è DEL TIPO utente/nomeBlob
     let i = name.indexOf("/");
     let nome = name.substring(i+1);
     this.deleteEntryDB(nome);

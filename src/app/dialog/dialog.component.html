@@ -1,10 +1,14 @@
 <mat-grid-list cols="2" rowHeight="1:1.5">
   <mat-grid-tile>
     <h1 *ngIf="this.data.categoria!==' '&& this.data.anno !== null && this.ret[0]!==0">
-      Nel {{this.data.anno}} hai speso {{this.ret[0]}}€ per la categoria {{this.data.categoria}}
+      <ul>
+        Nel {{this.data.anno}} hai speso {{this.ret[0]}}€ per la categoria {{this.data.categoria}}
+      </ul>
     </h1>
     <h1 *ngIf="this.data.categoria!==' '&& this.data.anno !== null && this.ret[0]===0">
-      Non hai avuto spese nel {{this.data.anno}} per la categoria {{this.data.categoria}}
+      <ul>
+        Non hai avuto spese nel {{this.data.anno}} per la categoria {{this.data.categoria}}
+      </ul>
     </h1>
     <h1 *ngIf="this.data.categoria === ' ' && this.data.anno !== null">
       Nel {{this.data.anno}} hai speso 
