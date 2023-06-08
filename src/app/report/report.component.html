@@ -11,7 +11,7 @@
   <a mat-raised-button href="/.auth/logout">
     Logout
     <mat-icon>logout</mat-icon>
-</a>
+  </a>
 </mat-toolbar>
 
 <mat-drawer-container class="example-container" autosize>
@@ -29,10 +29,15 @@
   </mat-drawer>
 
   <div>
-    <mat-grid-list cols="3" rowHeight="370px">
+    <mat-grid-list cols="3" rowHeight="370px" id="grafici">
       <mat-grid-tile>
         <canvas baseChart [datasets]="doughnutChartData" [labels]="doughnutChartLabels" [options]="doughnutChartOptions"
           [legend]="doughnutChartLegend" [type]="doughnutChartType">
+        </canvas>
+      </mat-grid-tile>
+      <mat-grid-tile>
+        <canvas baseChart [datasets]="doughnutChartData2" [labels]="doughnutChartLabels2"
+          [options]="doughnutChartOptions2" [legend]="doughnutChartLegend2" [type]="doughnutChartType2">
         </canvas>
       </mat-grid-tile>
       <mat-grid-tile>
@@ -40,65 +45,47 @@
           [legend]="pieChartLegend" [type]="pieChartType">
         </canvas>
       </mat-grid-tile>
-      <mat-grid-tile>
-        <canvas baseChart [datasets]="polarChartData" [labels]="polarChartLabels" [options]="polarChartOptions"
-          [legend]="polarChartLegend" [type]="polarChartType">
-        </canvas>
-      </mat-grid-tile>
     </mat-grid-list>
-    <div class="grid-container">
-      <mat-grid-list cols="3" rowHeight="180px">
-        <mat-grid-tile>
-          <div>
-            <h2>Seleziona la categoria</h2>
-            <mat-form-field appearance="outline" floatLabel="always">
-              <mat-label>Categoria</mat-label>
-              <mat-select [(value)]="currentCat">
-                <mat-option *ngFor="let cat of categorie" [value]="cat">{{cat}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-        </mat-grid-tile>
-        <mat-grid-tile>
-          <div>
-            <h2>Seleziona l'anno</h2>
-            <mat-form-field appearance="outline">
-              <mat-label>Anno</mat-label>
-              <input [formControl]="anno" type="number" matInput placeholder="Anno">
-            </mat-form-field>
-          </div>
-        </mat-grid-tile>
-        <mat-grid-tile>
-          <div>
-            <h2>Importo massimo</h2>
-            <mat-form-field appearance="outline">
-              <mat-label>Importo massimo</mat-label>
-              <input [formControl]="przMax" type="number" matInput placeholder="Importo">
-            </mat-form-field>
-            <button mat-raised-button (click)="ricercaConFiltri()" color="warn" style="margin-left: 8px;">CERCA</button>
-          </div>
-        </mat-grid-tile>
-      </mat-grid-list>
-    </div>
 
-    <div class="row">
-      <div class="col-md-3 mb-4" *ngFor="let documento of pageSlice;">
-        <div class="text-center card-content">
-          <img class="card-img-top custom-img" [src]="selezionaImm(documento.id)">
-          <h3 class="fw-bolder" style="color: rgb(99, 99, 99);">{{documento.id | uppercase}}</h3>
-          <h4 class="fw-bolder">Anno: {{documento.anno}}</h4>
-          <h4 class="fw-bolder">Importo: {{documento.importo | currency}}</h4>
-          <h4 class="fw-bolder">Tag: {{documento.tag}}</h4>
-          <button mat-raised-button color="primary" (click)="downloadBlobs(documento.id)">
-            Download
-            <mat-icon>cloud_download</mat-icon>
-          </button>
+    <div class="content">
+
+      <div class="grid-container">
+
+        <div class="grid-item">
+          <div id="barraDiRicerca">
+            <mat-card class="example-card" style="background-color: rgba(255, 255, 255, 0.924)">
+              <div class="row">
+                <h2 style="margin-top: 2%;text-align: center;">Seleziona la categoria</h2>
+                <mat-form-field class="form-ricerca" appearance="outline" floatLabel="always">
+                  <mat-label>Categoria</mat-label>
+                  <mat-select [(value)]="currentCat">
+                    <mat-option *ngFor="let cat of categorie" [value]="cat">{{cat}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <h2 style="text-align: center;">Seleziona l'anno</h2>
+                <mat-form-field class="form-ricerca" appearance="outline">
+                  <mat-label>Anno</mat-label>
+                  <input type="number" [formControl]="anno" matInput placeholder="Anno">
+                </mat-form-field>
+              </div>
+              <p></p>
+              <button style="width: fit-content; margin-left: 40%; margin-bottom: 2%;" mat-raised-button
+                (click)="openDialog()" color="warn">CERCA</button>
+            </mat-card>
+          </div>
         </div>
+
+        <div class="grid-item">
+          <div class="grafico">
+            <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
+              [legend]="barChartLegend" [type]="barChartType">
+            </canvas>
+          </div>
+        </div>
+        
       </div>
-      <mat-paginator class="pagination-container" [length]="this.retRicerca.length" [pageSize]="4"
-        [pageSizeOptions]="[4,8,12]" (page)="this.onPageChange($event)">
-      </mat-paginator>
-  </div>
+
+    </div>
   </div>
 
 </mat-drawer-container>

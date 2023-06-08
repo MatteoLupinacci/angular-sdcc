@@ -7,6 +7,8 @@ import { DatabaseService } from '../services/database.service';
 import { ChartOptions, ChartType } from 'chart.js';
 import { user } from '../entity/user';
 import { UtenteService } from '../services/utente.service';
+import { DialogComponent } from '../dialog/dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-report',
@@ -17,7 +19,7 @@ export class ReportComponent {
    doughnutChartData: any[] = [];
    doughnutChartLegend = true;
    doughnutChartType: ChartType = 'doughnut';
-   doughnutChartLabels = ['Spese alimentari','Istruzione','Sport','Trasporti'];
+   doughnutChartLabels = ["Casa","Tasse e Imposte","Spese sanitarie","Spese alimentari"];
    doughnutChartOptions: ChartOptions = {
     responsive: true,
       plugins: {
@@ -47,12 +49,12 @@ export class ReportComponent {
         }
       }
   };
-  
-   polarChartData: any[] = [];
-   polarChartLegend = true;
-   polarChartType: ChartType = 'polarArea';
-   polarChartLabels = ['2020','2021','2022','2023'];
-   polarChartOptions: ChartOptions = {
+
+   doughnutChartData2: any[] = [];
+   doughnutChartLegend2 = true;
+   doughnutChartType2: ChartType = 'doughnut';
+   doughnutChartLabels2 = ["Istruzione","Sport","Trasporti","Altro"];
+   doughnutChartOptions2: ChartOptions = {
     responsive: true,
       plugins: {
         legend: {
@@ -60,17 +62,33 @@ export class ReportComponent {
         },
         title: {
           display: true,
-          text: 'Spese totali dal 2020 al 2023'
+          text: 'Spese totali per le categorie'
         }
       }
   };
   
+  barChartLegend = false;
+  barChartType: ChartType = 'bar';
+  barChartData: any[] = [];
+  barChartLabels = ['2019','2020','2021','2022', '2023'];
+  barChartOptions: ChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Spese totali dal 2019 al 2023'
+      }
+    }
+  };
+
   sas: string = "sp=racwdli&st=2023-05-15T21:56:40Z&se=2023-10-01T05:56:40Z&spr=https&sv=2022-11-02&sr=c&sig=lu3kf0SOjckYI7V40HqM4z0Ns0eQ5NxcE8sjx%2FN%2BoaU%3D";
   blob: any;
   user!:user;
 
-  categorie: String[] = [" ","Casa","Tasse e Imposte","Spese sanitarie","Spese alimentari","Istruzione","Sport","Trasporti","Cura personale"
-  ,"Viaggi","Attività ricreative","Altro"];
+  categorie: String[] = [" ","Casa","Tasse e Imposte","Spese sanitarie","Spese alimentari","Istruzione","Sport","Trasporti","Altro"];
   nome:FormControl = new FormControl("",[]);  //approccio model driven
   currentCat: string = ' ';
   anno:FormControl = new FormControl("2023",[]);  //approccio model driven
@@ -82,7 +100,7 @@ export class ReportComponent {
             "https://static.vecteezy.com/ti/vettori-gratis/t2/20586482-csv-file-formato-documento-colore-icona-vettore-illustrazione-vettoriale.jpg"];
   przMax:FormControl = new FormControl("5000",[]);  //approccio model driven
   
-  constructor(private databaseService:DatabaseService, private blobService:BlobService, private utenteService:UtenteService) { }
+  constructor(private databaseService:DatabaseService, private blobService:BlobService, private utenteService:UtenteService, private dialog: MatDialog) { }
 
   selezionaImm(nome:string):string{
     const indexPunto = nome.indexOf(".");
@@ -108,10 +126,21 @@ export class ReportComponent {
     this.user = await this.utenteService.getUserInfo();
     this.mostraDocumenti();
     this.speseTotaliPerCategoria_Anno();
-    this.speseTotaliPerCategoria();
+    this.speseTotaliPerCategoria(1);
+    this.speseTotaliPerCategoria(2);
     this.speseTotaliPerAnno();
   }
 
+  openDialog() {
+    this.dialog.open(DialogComponent, {
+      width:'50%',
+      data: {
+        categoria: this.currentCat,
+        anno: this.anno.value
+      },
+    });
+  }
+  
   public downloadBlobs(name: string) {
     name = this.user.userDetails+"/"+name;  //IL NOME è DEL TIPO utente/nomeBlob
     this.blobService.downloadBlob(name, this.sas, blob => {
@@ -132,15 +161,28 @@ export class ReportComponent {
     });
   }
 
-  public async speseTotaliPerCategoria(): Promise<number[]> {
+  public async speseTotaliPerCategoria(gruppo:number): Promise<number[]> {
     let utente = await this.utenteService.getUtente();
     let ret: any[] = [];
-    this.databaseService.spesePerCategoria(this.doughnutChartLabels,utente).subscribe({
+    let label = this.doughnutChartLabels;
+    if(gruppo===2){
+      label = this.doughnutChartLabels2;
+    }
+    this.databaseService.spesePerCategoria(label,utente).subscribe({
       next: (res) => {
-        this.doughnutChartData = [
-          { data: res,
-          }
-        ];
+        if(gruppo === 1){
+          this.doughnutChartData = [
+            { data: res,
+            }
+          ];
+        }
+        else{
+          this.doughnutChartData2 = [
+            { data: res,
+            }
+          ];
+        }
+        
       },
       error: (err) => {
         console.error(err);
@@ -166,36 +208,27 @@ export class ReportComponent {
     return ret;
   }
 
-  public async speseTotaliPerAnno(): Promise<number[]> {
+  async speseTotaliPerAnno(): Promise<number[]> {
     let utente = await this.utenteService.getUtente();
-    let ret: any[] = [];
-    this.databaseService.spesePerAnno(2020, 2023,utente).subscribe({
-      next: (res) => {
-        this.polarChartData = [
+    let ret:any[] = [];
+    this.databaseService.spesePerAnno(2019, 2023,utente).subscribe({
+      next: (res:any[]) => {
+        this.barChartData = [
           { data: res,
-            backgroundColor: [
-              'rgba(255, 99, 132, 0.2)',
-              'rgba(75, 192, 192, 0.2)',
-              'rgba(54, 162, 235, 0.2)',
-              'rgba(153, 102, 255, 0.2)',
-            ],
-            borderColor: [
-              'rgb(255, 99, 132)',
-              'rgb(75, 192, 192)',
-              'rgb(54, 162, 235)',
-              'rgb(153, 102, 255)',
-            ],
+            backgroundColor: ['green','#FF6384', '#36A2EB', '#FFCE56', '#FF9F40'], // Colori accesi per le barre
+            hoverBackgroundColor: ['green','#FF6384', '#36A2EB', '#FFCE56', '#FF9F40'], // Colori accesi per il mouse hover sulle barre
+            borderColor: ['green','#FF6384', '#36A2EB', '#FFCE56', '#FF9F40'],
             borderWidth: 3 
           }
         ];
       },
-      error: (err) => {
+      error: (err:any) => {
         console.error(err);
       }
     });
     return ret;
   }
-
+  
   public async ricercaConFiltri(){
     let utente = await this.utenteService.getUtente();
     let anno: any = parseInt(this.anno.value,10);

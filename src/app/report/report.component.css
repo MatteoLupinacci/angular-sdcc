@@ -23,6 +23,13 @@
   width: 99%;
 }
 
+.grid-container {
+  display: grid;
+  grid-template-rows: 55vh;
+  grid-template-columns: 30% 50%;
+  gap: 10px; /* Spazio tra le celle */
+}
+
 .row{
   background-color: #fff;
   border-radius: 10px;

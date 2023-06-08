@@ -4,7 +4,7 @@ import { BlobService } from '../services/blob.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { DatabaseService } from '../services/database.service';
 import { Documento } from '../entity/Documento';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { ChartOptions, ChartType } from 'chart.js';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from '../dialog/dialog.component';
@@ -32,13 +32,17 @@ export class HomeComponent implements OnInit {
     tags: new FormControl('', Validators.required)
   });
 
-  categorie: String[] = [" ","Casa","Tasse e Imposte","Spese sanitarie","Spese alimentari","Istruzione","Sport","Trasporti","Cura personale"
-  ,"Viaggi","Attività ricreative","Altro"];
+  categorie: String[] = [" ","Casa","Tasse e Imposte","Spese sanitarie","Spese alimentari","Istruzione","Sport","Trasporti","Altro"];
+  annoRic:any = new FormControl("2023",[]);  //approccio model driven
+  currentPrz:any = new FormControl("5000",[]);
   currentCat: string = ' ';
-  annoRic = new FormControl("2023",[]);  //approccio model driven
-  currentPrz: number = 0;
   retRicerca: Documento[] = [];
-  pageSlice = this.retRicerca.slice(0,4);
+  pageSlice = this.retRicerca.slice(0,6);
+  immagini = ["https://static.vecteezy.com/ti/vettori-gratis/t2/20586980-doc-file-formato-documento-colore-icona-vettore-illustrazione-vettoriale.jpg",
+              "https://static.vecteezy.com/ti/vettori-gratis/t2/19572895-ricerca-file-pdf-documento-colore-icona-illustrazione-vettoriale.jpg",
+              "https://static.vecteezy.com/ti/vettori-gratis/t2/7318804-jpg-file-icona-colore-immagine-digitale-formato-file-isolato-illustrazione-vettoriale.jpg",
+              "https://static.vecteezy.com/ti/vettori-gratis/t2/20586482-csv-file-formato-documento-colore-icona-vettore-illustrazione-vettoriale.jpg"
+            ];
 
   barChartLegend = false;
   barChartType: ChartType = 'bar';
@@ -68,7 +72,8 @@ export class HomeComponent implements OnInit {
   async ngOnInit() {
     this.user = await this.utenteService.getUserInfo();
     this.reloadBlobs();
-    this.speseTotaliPerAnno();
+    //this.speseTotaliPerAnno();
+    this.mostraDocumenti();
   }
   
   handleFileInput(event: any) {
@@ -95,7 +100,6 @@ export class HomeComponent implements OnInit {
   }
 
   reloadBlobs() {
-    this.speseTotaliPerAnno();
     this.blobService.getBlobsName(this.sas,this.user.userDetails).then(list => {
       this.dataSource.data = list;
     })
@@ -171,5 +175,62 @@ export class HomeComponent implements OnInit {
       }
     });
     return ret;
+  }
+
+  public async mostraDocumenti() {
+    (await this.databaseService.mostraDocumenti()).subscribe({
+      next: (res) => {
+        this.retRicerca = res;
+        this.pageSlice = this.retRicerca.slice(0,6);
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
+  }
+
+  selezionaImm(nome:string):string{
+    const indexPunto = nome.indexOf(".");
+    const est = nome.substring(indexPunto+1);
+    if(est == "pdf")
+      return this.immagini[1];
+    if(est == "jpg" || est == "jpeg" || est == "png")
+      return this.immagini[2];
+    if(est == "xlsx")
+      return this.immagini[3];
+    return this.immagini[0];
+  }
+  
+  onPageChange(event: PageEvent){ //per la paginazione
+    const startIndex = event.pageIndex*event.pageSize;
+    let endIndex = startIndex+event.pageSize;
+    if(endIndex > this.retRicerca.length)
+      endIndex = this.retRicerca.length;
+    this.pageSlice=this.retRicerca.slice(startIndex,endIndex);
+  }
+  
+  public async ricercaConFiltri(){
+    let utente = await this.utenteService.getUtente();
+    let anno: any = parseInt(this.annoRic.value,10);
+    let cat: any = this.currentCat;
+    let prz: number = parseFloat(this.currentPrz.value);
+    if(this.annoRic.value === "" || this.annoRic.value === " ")
+      anno = null;
+    if(this.currentCat === "" || this.currentCat === " "){
+      cat = null;
+      this.mostraDocumenti();
+      return;
+    }
+    if(prz === 0)
+      prz = Number.MAX_VALUE;
+    this.databaseService.ricercaConFiltri(cat,anno,prz,utente).subscribe({
+      next: (res) => {
+        this.retRicerca = res;
+        this.pageSlice = this.retRicerca.slice(0,6);
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
   }
 }
