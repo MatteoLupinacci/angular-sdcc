@@ -89,46 +89,17 @@ export class ReportComponent {
   user!:user;
 
   categorie: String[] = [" ","Casa","Tasse e Imposte","Spese sanitarie","Spese alimentari","Istruzione","Sport","Trasporti","Altro"];
-  nome:FormControl = new FormControl("",[]);  //approccio model driven
   currentCat: string = ' ';
   anno:FormControl = new FormControl("2023",[]);  //approccio model driven
-  retRicerca: Documento[] = [];
-  pageSlice = this.retRicerca.slice(0,4);
-  immagini = ["https://static.vecteezy.com/ti/vettori-gratis/t2/20586980-doc-file-formato-documento-colore-icona-vettore-illustrazione-vettoriale.jpg",
-              "https://static.vecteezy.com/ti/vettori-gratis/t2/19572895-ricerca-file-pdf-documento-colore-icona-illustrazione-vettoriale.jpg",
-            "https://static.vecteezy.com/ti/vettori-gratis/t2/7318804-jpg-file-icona-colore-immagine-digitale-formato-file-isolato-illustrazione-vettoriale.jpg",
-            "https://static.vecteezy.com/ti/vettori-gratis/t2/20586482-csv-file-formato-documento-colore-icona-vettore-illustrazione-vettoriale.jpg"];
-  przMax:FormControl = new FormControl("5000",[]);  //approccio model driven
   
   constructor(private databaseService:DatabaseService, private blobService:BlobService, private utenteService:UtenteService, private dialog: MatDialog) { }
 
-  selezionaImm(nome:string):string{
-    const indexPunto = nome.indexOf(".");
-    const est = nome.substring(indexPunto+1);
-    if(est == "pdf")
-      return this.immagini[1];
-    if(est == "jpg" || est == "jpeg" || est == "png")
-      return this.immagini[2];
-    if(est == "xlsx")
-      return this.immagini[3];
-    return this.immagini[0];
-  }
-  
-  onPageChange(event: PageEvent){ //per la paginazione
-    const startIndex = event.pageIndex*event.pageSize;
-    let endIndex = startIndex+event.pageSize;
-    if(endIndex > this.retRicerca.length)
-      endIndex = this.retRicerca.length;
-    this.pageSlice=this.retRicerca.slice(startIndex,endIndex);
-  }
-
   async ngOnInit() {
     this.user = await this.utenteService.getUserInfo();
-    this.mostraDocumenti();
-    this.speseTotaliPerCategoria_Anno();
+    this.speseTotaliPerAnno();
     this.speseTotaliPerCategoria(1);
     this.speseTotaliPerCategoria(2);
-    this.speseTotaliPerAnno();
+    this.speseTotaliPerCategoria_Anno();
   }
 
   openDialog() {
@@ -138,26 +109,6 @@ export class ReportComponent {
         categoria: this.currentCat,
         anno: this.anno.value
       },
-    });
-  }
-  
-  public downloadBlobs(name: string) {
-    name = this.user.userDetails+"/"+name;  //IL NOME è DEL TIPO utente/nomeBlob
-    this.blobService.downloadBlob(name, this.sas, blob => {
-      let url = window.URL.createObjectURL(blob);
-      window.open(url);
-    })
-  }
-
-  public async mostraDocumenti() {
-    (await this.databaseService.mostraDocumenti()).subscribe({
-      next: (res) => {
-        this.retRicerca = res;
-        this.pageSlice = this.retRicerca.slice(0,4);
-      },
-      error: (err) => {
-        console.error(err);
-      }
     });
   }
 
@@ -227,28 +178,5 @@ export class ReportComponent {
       }
     });
     return ret;
-  }
-  
-  public async ricercaConFiltri(){
-    let utente = await this.utenteService.getUtente();
-    let anno: any = parseInt(this.anno.value,10);
-    let cat: any = this.currentCat;
-    let prz: number = parseFloat(this.przMax.value);
-    if(this.anno.value === "" || this.anno.value === " ")
-      anno = null;
-    if(this.currentCat === "" || this.currentCat === " "){
-      cat = null;
-    }
-    if(prz === 0)
-      prz = Number.MAX_VALUE;
-    this.databaseService.ricercaConFiltri(cat,anno,prz,utente).subscribe({
-      next: (res) => {
-        this.retRicerca = res;
-        this.pageSlice = this.retRicerca.slice(0,12);
-      },
-      error: (err) => {
-        console.error(err);
-      }
-    });
   }
 }

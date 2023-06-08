@@ -29,7 +29,47 @@
   </mat-drawer>
 
   <div>
-    <mat-grid-list cols="3" rowHeight="370px" id="grafici">
+
+    <div class="content">
+
+      <div class="grid-container">
+
+        <div class="grid-item">
+          <div class="grafico">
+            <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
+              [legend]="barChartLegend" [type]="barChartType">
+            </canvas>
+          </div>
+        </div>
+
+        <div class="grid-item">
+          <div class="barraDiRicerca">
+            <mat-card style="background-color: rgba(255, 255, 255, 0.924)">
+              
+                <h2 style="margin-top: 2%;text-align: center;">Seleziona la categoria</h2>
+                <mat-form-field class="form-ricerca" appearance="outline" floatLabel="always">
+                  <mat-label>Categoria</mat-label>
+                  <mat-select [(value)]="currentCat">
+                    <mat-option *ngFor="let cat of categorie" [value]="cat">{{cat}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <h2 style="text-align: center;">Seleziona l'anno</h2>
+                <mat-form-field class="form-ricerca" appearance="outline">
+                  <mat-label>Anno</mat-label>
+                  <input type="number" [formControl]="anno" matInput placeholder="Anno">
+                </mat-form-field>
+              
+              <button style="width: fit-content; margin-left: 40%; margin-bottom: 2%;" mat-raised-button
+                (click)="openDialog()" color="warn">CERCA</button>
+            </mat-card>
+          </div>
+        </div>
+  
+      </div>
+
+    </div>
+    
+    <mat-grid-list cols="3" rowHeight="370px" class="div-grafici">
       <mat-grid-tile>
         <canvas baseChart [datasets]="doughnutChartData" [labels]="doughnutChartLabels" [options]="doughnutChartOptions"
           [legend]="doughnutChartLegend" [type]="doughnutChartType">
@@ -47,45 +87,6 @@
       </mat-grid-tile>
     </mat-grid-list>
 
-    <div class="content">
-
-      <div class="grid-container">
-
-        <div class="grid-item">
-          <div id="barraDiRicerca">
-            <mat-card class="example-card" style="background-color: rgba(255, 255, 255, 0.924)">
-              <div class="row">
-                <h2 style="margin-top: 2%;text-align: center;">Seleziona la categoria</h2>
-                <mat-form-field class="form-ricerca" appearance="outline" floatLabel="always">
-                  <mat-label>Categoria</mat-label>
-                  <mat-select [(value)]="currentCat">
-                    <mat-option *ngFor="let cat of categorie" [value]="cat">{{cat}}</mat-option>
-                  </mat-select>
-                </mat-form-field>
-                <h2 style="text-align: center;">Seleziona l'anno</h2>
-                <mat-form-field class="form-ricerca" appearance="outline">
-                  <mat-label>Anno</mat-label>
-                  <input type="number" [formControl]="anno" matInput placeholder="Anno">
-                </mat-form-field>
-              </div>
-              <p></p>
-              <button style="width: fit-content; margin-left: 40%; margin-bottom: 2%;" mat-raised-button
-                (click)="openDialog()" color="warn">CERCA</button>
-            </mat-card>
-          </div>
-        </div>
-
-        <div class="grid-item">
-          <div class="grafico">
-            <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
-              [legend]="barChartLegend" [type]="barChartType">
-            </canvas>
-          </div>
-        </div>
-        
-      </div>
-
-    </div>
   </div>
 
 </mat-drawer-container>

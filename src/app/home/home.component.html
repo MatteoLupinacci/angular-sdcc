@@ -40,7 +40,6 @@
     <div class="content">
 
       <div class="grid-container">
-
         <div class="grid-item">
           <div class="form-container">
             <form [formGroup]="documentForm">
@@ -50,7 +49,7 @@
                   <ng-template matStepContent>
                     <div class="form-group">
                       <input type="file" id="file" formControlName="file" (change)="handleFileInput($event)"
-                        class="form-control-file">
+                        class="form-control-file" style="font-size: large;">
                       <div *ngIf="documentForm.controls['file'].invalid && documentForm.controls['file'].touched"
                         class="invalid-feedback">
                         Selezionare un file
@@ -64,7 +63,6 @@
                   <ng-template matStepLabel>Fornisci una descrizione</ng-template>
                   <ng-template matStepContent>
                     <div class="form-group">
-                      <label for="descrizione">Descrizione:</label>
                       <input type="text" id="descrizione" formControlName="descrizione" class="form-control">
                       <div
                         *ngIf="documentForm.controls['descrizione'].invalid && documentForm.controls['descrizione'].touched"
@@ -80,7 +78,6 @@
                 <mat-step>
                   <ng-template matStepLabel>Specifica l'importo</ng-template>
                   <div class="form-group">
-                    <label for="importo">Importo:</label>
                     <input type="number" id="importo" formControlName="importo" class="form-control">
                     <div *ngIf="documentForm.controls['importo'].invalid && documentForm.controls['importo'].touched"
                       class="invalid-feedback">
@@ -94,7 +91,6 @@
                 <mat-step>
                   <ng-template matStepLabel>Specifica l'anno fiscale</ng-template>
                   <div class="form-group">
-                    <label for="anno">Anno</label>
                     <input type="number" id="anno" formControlName="anno" class="form-control">
                     <div *ngIf="documentForm.controls['anno'].invalid && documentForm.controls['anno'].touched"
                       class="invalid-feedback">
@@ -108,7 +104,6 @@
                 <mat-step>
                   <ng-template matStepLabel>Seleziona un tag per la classificazione</ng-template>
                   <div class="form-group">
-                    <label for="categoria">Tag:</label>
                     <select id="categoria" formControlName="tags" class="form-control">
                       <option value=""></option>
                       <option value="Casa">Casa</option>
@@ -118,9 +113,6 @@
                       <option value="Istruzione">Istruzione</option>
                       <option value="Sport">Sport</option>
                       <option value="Trasporti">Trasporti</option>
-                      <option value="Cura personale">Cura personale</option>
-                      <option value="Viaggi">Viaggi</option>
-                      <option value="Attività ricreative">Attività Ricreative</option>
                       <option value="Altro">Altro</option>
                     </select>
                   </div>
@@ -129,11 +121,13 @@
                 </mat-step>
 
                 <mat-step>
-                  <ng-template matStepLabel>Carica il documento</ng-template>
-                  <button mat-button (click)="onSubmit()">
-                    <mat-icon>cloud_upload</mat-icon>
-                    Aggiungi
-                  </button>
+                  <ng-template matStepLabel>
+                    <button mat-button (click)="onSubmit()">
+                      <mat-icon>cloud_upload</mat-icon>
+                      Carica il documento
+                    </button>
+                  </ng-template>
+                  
                 </mat-step>
               </mat-stepper>
             </form>
@@ -147,7 +141,7 @@
 
                 <ng-container matColumnDef="id">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header> Nome </th>
-                  <td mat-cell *matCellDef="let row"> 
+                  <td mat-cell *matCellDef="let row">
                     {{row}}
                   </td>
                 </ng-container>
@@ -155,7 +149,7 @@
                 <ng-container matColumnDef="Azioni">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
                   <td mat-cell *matCellDef="let row">
-                    <button style="margin-left: 3px;" mat-raised-button color="warn" (click)="deleteBlob(row)">
+                    <button style="margin-left: 3px;" mat-raised-button color="primary" (click)="deleteBlob(row)">
                       <mat-icon>delete</mat-icon>
                       Delete
                     </button>
@@ -164,70 +158,71 @@
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
               </table>
-              <mat-paginator [pageSizeOptions]="[8]" class="paginator-tabella"></mat-paginator>
+              <mat-paginator [pageSizeOptions]="[8,12]"></mat-paginator>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="barraDiRicerca">
-        <mat-grid-list cols="3" rowHeight="180px">
-          <mat-grid-tile>
-            <div>
-              <h2>Seleziona la categoria</h2>
-              <mat-form-field appearance="outline" floatLabel="always">
-                <mat-label>Categoria</mat-label>
-                <mat-select [(value)]="currentCat">
-                  <mat-option *ngFor="let cat of categorie" [value]="cat">{{cat}}</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-          </mat-grid-tile>
-          <mat-grid-tile>
-            <div>
-              <h2>Seleziona l'anno</h2>
-              <mat-form-field appearance="outline">
-                <mat-label>Anno</mat-label>
-                <input [formControl]="annoRic" type="number" matInput placeholder="Anno">
-              </mat-form-field>
-            </div>
-          </mat-grid-tile>
-          <mat-grid-tile>
-            <div>
-              <h2>Importo massimo</h2>
-              <mat-form-field appearance="outline">
-                <mat-label>Importo massimo</mat-label>
-                <input [formControl]="currentPrz" type="number" matInput placeholder="Importo">
-              </mat-form-field>
-              <button mat-raised-button (click)="ricercaConFiltri()" color="warn"
-                style="margin-left: 8px;">CERCA</button>
-            </div>
-          </mat-grid-tile>
-        </mat-grid-list>
-      </div>
-      
-      <p></p>
-
-      <div class="card-container">
-        <div *ngFor="let documento of pageSlice;">
-          <div class="card-content">
-            <img class="custom-img" [src]="selezionaImm(documento.id)">
-            <h3 class="fw-bolder" style="color: rgb(99, 99, 99);">{{documento.id | uppercase}}</h3>
-            <h4 class="fw-bolder">Anno: {{documento.anno}}</h4>
-            <h4 class="fw-bolder">Importo: {{documento.importo | currency}}</h4>
-            <h4 class="fw-bolder">Tag: {{documento.tag}}</h4>
-            <button mat-raised-button color="primary" (click)="downloadBlobs(documento.id)" style="margin-bottom: 5%;">
-              Download
-              <mat-icon>cloud_download</mat-icon>
-            </button>
-          </div>
+      <div class="ricercaConFiltri">
+        <div class="barraDiRicerca">
+          <mat-grid-list cols="3" rowHeight="180px">
+            <mat-grid-tile>
+              <div>
+                <h2>Seleziona la categoria</h2>
+                <mat-form-field appearance="outline" floatLabel="always">
+                  <mat-label>Categoria</mat-label>
+                  <mat-select [(value)]="currentCat">
+                    <mat-option *ngFor="let cat of categorie" [value]="cat">{{cat}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+              <div>
+                <h2>Seleziona l'anno</h2>
+                <mat-form-field appearance="outline">
+                  <mat-label>Anno</mat-label>
+                  <input [formControl]="annoRic" type="number" matInput placeholder="Anno">
+                </mat-form-field>
+              </div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+              <div>
+                <h2>Importo massimo</h2>
+                <mat-form-field appearance="outline">
+                  <mat-label>Importo massimo</mat-label>
+                  <input [formControl]="currentPrz" type="number" matInput placeholder="Importo">
+                </mat-form-field>
+                <button mat-raised-button (click)="ricercaConFiltri()" color="warn"
+                  style="margin-left: 8px;">CERCA</button>
+              </div>
+            </mat-grid-tile>
+          </mat-grid-list>
         </div>
-        
-      </div>
-      <p></p>
-      <mat-paginator class="pagination-container" [length]="this.retRicerca.length" [pageSize]="6"
-          [pageSizeOptions]="[6,8,12]" (page)="this.onPageChange($event)">
+
+        <div class="card-container">
+          <div *ngFor="let documento of pageSlice;">
+            <div class="card-content">
+              <img class="custom-img" [src]="selezionaImm(documento.id)">
+              <h3 class="fw-bolder" style="color: rgb(99, 99, 99);">{{documento.id | uppercase}}</h3>
+              <h4 class="fw-bolder">Anno: {{documento.anno}}</h4>
+              <h4 class="fw-bolder">Importo: {{documento.importo | currency}}</h4>
+              <h4 class="fw-bolder">Tag: {{documento.tag}}</h4>
+              <button mat-raised-button color="primary" (click)="downloadBlobs(documento.id)"
+                style="margin-bottom: 5%;">
+                Download
+                <mat-icon>cloud_download</mat-icon>
+              </button>
+            </div>
+          </div>
+
+        </div>
+        <mat-paginator class="pagination-container" [length]="this.retRicerca.length" [pageSize]="6"
+          [pageSizeOptions]="[6,12]" (page)="this.onPageChange($event)">
         </mat-paginator>
+      </div>
+     
     </div>
   </div>
 

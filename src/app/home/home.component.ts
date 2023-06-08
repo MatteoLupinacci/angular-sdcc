@@ -5,9 +5,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { DatabaseService } from '../services/database.service';
 import { Documento } from '../entity/Documento';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { ChartOptions, ChartType } from 'chart.js';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogComponent } from '../dialog/dialog.component';
 import { user } from '../entity/user';
 import { Utente } from '../entity/Utente';
 import { UtenteService } from '../services/utente.service';
@@ -44,23 +42,6 @@ export class HomeComponent implements OnInit {
               "https://static.vecteezy.com/ti/vettori-gratis/t2/20586482-csv-file-formato-documento-colore-icona-vettore-illustrazione-vettoriale.jpg"
             ];
 
-  barChartLegend = false;
-  barChartType: ChartType = 'bar';
-  barChartData: any[] = [];
-  barChartLabels = ['2019','2020','2021','2022', '2023'];
-  barChartOptions: ChartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: 'Spese totali dal 2019 al 2023'
-      }
-    }
-  };
-
   displayedColumns: any[] = ['id', 'Azioni'];
   dataSource: MatTableDataSource<String>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -72,8 +53,6 @@ export class HomeComponent implements OnInit {
   async ngOnInit() {
     this.user = await this.utenteService.getUserInfo();
     this.reloadBlobs();
-    //this.speseTotaliPerAnno();
-    this.mostraDocumenti();
   }
   
   handleFileInput(event: any) {
@@ -85,24 +64,23 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
+  onPageChange(event: PageEvent){ //per la paginazione
+    const startIndex = event.pageIndex*event.pageSize;
+    let endIndex = startIndex+event.pageSize;
+    if(endIndex > this.retRicerca.length)
+      endIndex = this.retRicerca.length;
+    this.pageSlice=this.retRicerca.slice(startIndex,endIndex);
   }
 
-  openDialog() {
-    this.dialog.open(DialogComponent, {
-      width:'50%',
-      data: {
-        categoria: this.currentCat,
-        anno: this.annoRic.value
-      },
-    });
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
   }
 
   reloadBlobs() {
     this.blobService.getBlobsName(this.sas,this.user.userDetails).then(list => {
       this.dataSource.data = list;
     })
+    this.mostraDocumenti();
   }
 
   onSubmit() {
@@ -119,6 +97,7 @@ export class HomeComponent implements OnInit {
   }
 
   downloadBlobs(name: string) {
+    name = this.user.userDetails+"/"+name;  //IL NOME è DEL TIPO utente/nomeBlob
     this.blobService.downloadBlob(name, this.sas, blob => {
       let url = window.URL.createObjectURL(blob);
       window.open(url);
@@ -156,29 +135,31 @@ export class HomeComponent implements OnInit {
     })
   }
 
-  async speseTotaliPerAnno(): Promise<number[]> {
-    let utente = await this.utenteService.getUtente();
-    let ret:any[] = [];
-    this.databaseService.spesePerAnno(2019, 2023,utente).subscribe({
-      next: (res:any[]) => {
-        this.barChartData = [
-          { data: res,
-            backgroundColor: ['green','#FF6384', '#36A2EB', '#FFCE56', '#FF9F40'], // Colori accesi per le barre
-            hoverBackgroundColor: ['green','#FF6384', '#36A2EB', '#FFCE56', '#FF9F40'], // Colori accesi per il mouse hover sulle barre
-            borderColor: ['green','#FF6384', '#36A2EB', '#FFCE56', '#FF9F40'],
-            borderWidth: 3 
-          }
-        ];
+  public async mostraDocumenti() {
+    (await this.databaseService.mostraDocumenti()).subscribe({
+      next: (res) => {
+        this.retRicerca = res;
+        this.pageSlice = this.retRicerca.slice(0,6);
       },
-      error: (err:any) => {
+      error: (err) => {
         console.error(err);
       }
     });
-    return ret;
   }
-
-  public async mostraDocumenti() {
-    (await this.databaseService.mostraDocumenti()).subscribe({
+  
+  public async ricercaConFiltri(){
+    let utente = await this.utenteService.getUtente();
+    if(this.currentCat === "" || this.currentCat === " "){
+      this.mostraDocumenti();
+      return;
+    }
+    let anno: any = parseInt(this.annoRic.value,10);
+    let prz: number = parseFloat(this.currentPrz.value);
+    if(this.annoRic.value === "" || this.annoRic.value === " ")
+      anno = null;
+    if(prz === 0)
+      prz = Number.MAX_VALUE;
+    this.databaseService.ricercaConFiltri(this.currentCat,anno,prz,utente).subscribe({
       next: (res) => {
         this.retRicerca = res;
         this.pageSlice = this.retRicerca.slice(0,6);
@@ -199,38 +180,5 @@ export class HomeComponent implements OnInit {
     if(est == "xlsx")
       return this.immagini[3];
     return this.immagini[0];
-  }
-  
-  onPageChange(event: PageEvent){ //per la paginazione
-    const startIndex = event.pageIndex*event.pageSize;
-    let endIndex = startIndex+event.pageSize;
-    if(endIndex > this.retRicerca.length)
-      endIndex = this.retRicerca.length;
-    this.pageSlice=this.retRicerca.slice(startIndex,endIndex);
-  }
-  
-  public async ricercaConFiltri(){
-    let utente = await this.utenteService.getUtente();
-    let anno: any = parseInt(this.annoRic.value,10);
-    let cat: any = this.currentCat;
-    let prz: number = parseFloat(this.currentPrz.value);
-    if(this.annoRic.value === "" || this.annoRic.value === " ")
-      anno = null;
-    if(this.currentCat === "" || this.currentCat === " "){
-      cat = null;
-      this.mostraDocumenti();
-      return;
-    }
-    if(prz === 0)
-      prz = Number.MAX_VALUE;
-    this.databaseService.ricercaConFiltri(cat,anno,prz,utente).subscribe({
-      next: (res) => {
-        this.retRicerca = res;
-        this.pageSlice = this.retRicerca.slice(0,6);
-      },
-      error: (err) => {
-        console.error(err);
-      }
-    });
   }
 }

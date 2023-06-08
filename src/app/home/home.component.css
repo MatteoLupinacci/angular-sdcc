@@ -6,79 +6,38 @@
   width: 100%;
 }
 
+.example-sidenav {
+  padding: 20px;
+  background-image: url("src/assets/img/sidebar-4.jpg");
+}
+
 .example-sidenav-content {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.example-sidenav {
-  padding: 20px;
-  background-image: url("src/assets/img/sidebar-4.jpg");
-}
-
-.container {
-  display: flex;
-  max-width: 100%;
-  width: 100%;
-}
-
 .content {
   flex-grow: 1; /* Occupa tutto lo spazio rimanente */
-  padding: 0px; /* Aggiungi padding al contenuto principale */
 }
 
 .grid-container {
   display: grid;
-  grid-template-rows: 55vh;
-  grid-template-columns: 30% 50%;
+  grid-template-columns: 30% 60%;
   gap: 10px; /* Spazio tra le celle */
-}
-
-.grafico {
-  background-color: #fff;
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
-  max-width: 100%;
-  width: 100%;
-  height: 53vh;
+  max-height: 568px;
+  height: 568px;
 }
 
 .grid-item {
   padding: 10px;
+  height: 100%;
 }
 
 .form-container {
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
-  height: 100%; 
-}
-
-.form-ricerca{
-  width: 80%;
-  margin-left: 10%;
-}
-
-canvas {
-  width: 100% !important;
-  height: 100% !important;
-}
-
-.table-container {
-  background-color: #fff;
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
-  height: 100%;
-}
-
-.paginator-tabella{
-  margin-top: 7%;
-}
-
-.barraDiRicerca{
-  background-color: #fff;
-  width: 98.5%;
-  margin-left: 1%;
-  border-radius: 10px;
 }
 
 .invalid-feedback {
@@ -87,8 +46,26 @@ canvas {
   margin-top: 5px;
 }
 
+.table-container {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+}
+
 .mat-elevation-z8 {
   box-shadow: none;
+  border-radius: 10px;
+}
+
+.ricercaConFiltri{
+  background-color: #fff;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+}
+
+.barraDiRicerca{
+  background-color: #fff;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
   border-radius: 10px;
 }
 
@@ -98,8 +75,8 @@ canvas {
   justify-content: space-between;
   background-color: #fff;
   border-radius: 10px;
-  width: 98%;
-  margin-left: 1%;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+  margin-top: 1%;
 }
 
 .card-content {
@@ -110,11 +87,12 @@ canvas {
 }
 
 .custom-img {
-  width: 250px;
-  height: 250px;
+  width: 200px;
+  height: 200px;
 }
 
 .pagination-container{
   justify-content: center;
   width: 100%;
+  margin-top: 1%;
 }
