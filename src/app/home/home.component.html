@@ -16,9 +16,9 @@
 
 <header class="bg-primary bg-gradient text-white">
   <div class="text-center">
-    <h1 class="fw-bolder">Benvenuto {{this.user.userDetails}}</h1>
-    <p class="lead">💶💳Aggiungi documenti, classificali in base alle tue esigenze e crea report sulle tue spese💳💶
-    </p>
+      <h1 class="fw-bolder">Benvenuto {{this.user.userDetails}}</h1>
+      <p class="lead">💶💳Aggiungi documenti, classificali in base alle tue esigenze e crea report sulle tue spese💳💶
+      </p>
   </div>
 </header>
 
@@ -38,9 +38,7 @@
 
   <div class="example-sidenav-content">
     <div class="content">
-
       <div class="grid-container">
-
         <div class="grid-item">
           <div class="form-container">
             <form [formGroup]="documentForm">
@@ -141,6 +139,37 @@
         </div>
 
         <div class="grid-item">
+          <div class="grafico">
+            <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
+              [legend]="barChartLegend" [type]="barChartType">
+            </canvas>
+          </div>
+        </div>
+
+        <div class="grid-item">
+          <div id="barraDiRicerca">
+            <mat-card class="example-card" style="background-color: rgba(255, 255, 255, 0.924)">
+              <div class="row">
+                <h2 style="margin-top: 2%;text-align: center;">Seleziona la categoria</h2>
+                <mat-form-field class="form-ricerca" appearance="outline" floatLabel="always">
+                  <mat-label>Categoria</mat-label>
+                  <mat-select [(value)]="currentCat">
+                    <mat-option *ngFor="let cat of categorie" [value]="cat">{{cat}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <h2 style="text-align: center;">Seleziona l'anno</h2>
+                <mat-form-field class="form-ricerca" appearance="outline">
+                  <mat-label>Anno</mat-label>
+                  <input type="number" [formControl]="annoRic" matInput placeholder="Anno">
+                </mat-form-field>
+              </div><p></p>
+              <button style="width: fit-content; margin-left: 40%; margin-bottom: 2%;" mat-raised-button
+                (click)="openDialog()" color="warn">CERCA</button>
+            </mat-card>
+          </div>
+        </div>
+
+        <div class="grid-item" style="height: min-content;">
           <div class="table-container">
             <div class="mat-elevation-z8">
               <table mat-table [dataSource]="dataSource" matSort>
@@ -155,6 +184,10 @@
                 <ng-container matColumnDef="Azioni">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
                   <td mat-cell *matCellDef="let row">
+                    <button mat-raised-button color="primary" (click)="downloadBlobs(row)">
+                      <mat-icon>cloud_download</mat-icon>
+                      Download
+                    </button>
                     <button style="margin-left: 3px;" mat-raised-button color="warn" (click)="deleteBlob(row)">
                       <mat-icon>delete</mat-icon>
                       Delete
@@ -164,71 +197,12 @@
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
               </table>
-              <mat-paginator [pageSizeOptions]="[8]" class="paginator-tabella"></mat-paginator>
+              <mat-paginator [pageSizeOptions]="[4, 8, 12]" aria-label="Select page of users"></mat-paginator>
             </div>
           </div>
         </div>
       </div>
-
-      <div class="barraDiRicerca">
-        <mat-grid-list cols="3" rowHeight="180px">
-          <mat-grid-tile>
-            <div>
-              <h2>Seleziona la categoria</h2>
-              <mat-form-field appearance="outline" floatLabel="always">
-                <mat-label>Categoria</mat-label>
-                <mat-select [(value)]="currentCat">
-                  <mat-option *ngFor="let cat of categorie" [value]="cat">{{cat}}</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-          </mat-grid-tile>
-          <mat-grid-tile>
-            <div>
-              <h2>Seleziona l'anno</h2>
-              <mat-form-field appearance="outline">
-                <mat-label>Anno</mat-label>
-                <input [formControl]="annoRic" type="number" matInput placeholder="Anno">
-              </mat-form-field>
-            </div>
-          </mat-grid-tile>
-          <mat-grid-tile>
-            <div>
-              <h2>Importo massimo</h2>
-              <mat-form-field appearance="outline">
-                <mat-label>Importo massimo</mat-label>
-                <input [formControl]="currentPrz" type="number" matInput placeholder="Importo">
-              </mat-form-field>
-              <button mat-raised-button (click)="ricercaConFiltri()" color="warn"
-                style="margin-left: 8px;">CERCA</button>
-            </div>
-          </mat-grid-tile>
-        </mat-grid-list>
-      </div>
-      
-      <p></p>
-
-      <div class="card-container">
-        <div *ngFor="let documento of pageSlice;">
-          <div class="card-content">
-            <img class="custom-img" [src]="selezionaImm(documento.id)">
-            <h3 class="fw-bolder" style="color: rgb(99, 99, 99);">{{documento.id | uppercase}}</h3>
-            <h4 class="fw-bolder">Anno: {{documento.anno}}</h4>
-            <h4 class="fw-bolder">Importo: {{documento.importo | currency}}</h4>
-            <h4 class="fw-bolder">Tag: {{documento.tag}}</h4>
-            <button mat-raised-button color="primary" (click)="downloadBlobs(documento.id)" style="margin-bottom: 5%;">
-              Download
-              <mat-icon>cloud_download</mat-icon>
-            </button>
-          </div>
-        </div>
-        
-      </div>
-      <p></p>
-      <mat-paginator class="pagination-container" [length]="this.retRicerca.length" [pageSize]="6"
-          [pageSizeOptions]="[6,8,12]" (page)="this.onPageChange($event)">
-        </mat-paginator>
     </div>
   </div>
-
+  
 </mat-drawer-container>

@@ -7,8 +7,6 @@ import { DatabaseService } from '../services/database.service';
 import { ChartOptions, ChartType } from 'chart.js';
 import { user } from '../entity/user';
 import { UtenteService } from '../services/utente.service';
-import { DialogComponent } from '../dialog/dialog.component';
-import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-report',
@@ -67,23 +65,6 @@ export class ReportComponent {
       }
   };
   
-  barChartLegend = false;
-  barChartType: ChartType = 'bar';
-  barChartData: any[] = [];
-  barChartLabels = ['2019','2020','2021','2022', '2023'];
-  barChartOptions: ChartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: 'Spese totali dal 2019 al 2023'
-      }
-    }
-  };
-
   sas: string = "sp=racwdli&st=2023-05-15T21:56:40Z&se=2023-10-01T05:56:40Z&spr=https&sv=2022-11-02&sr=c&sig=lu3kf0SOjckYI7V40HqM4z0Ns0eQ5NxcE8sjx%2FN%2BoaU%3D";
   blob: any;
   user!:user;
@@ -100,7 +81,7 @@ export class ReportComponent {
             "https://static.vecteezy.com/ti/vettori-gratis/t2/20586482-csv-file-formato-documento-colore-icona-vettore-illustrazione-vettoriale.jpg"];
   przMax:FormControl = new FormControl("5000",[]);  //approccio model driven
   
-  constructor(private databaseService:DatabaseService, private blobService:BlobService, private utenteService:UtenteService, private dialog: MatDialog) { }
+  constructor(private databaseService:DatabaseService, private blobService:BlobService, private utenteService:UtenteService) { }
 
   selezionaImm(nome:string):string{
     const indexPunto = nome.indexOf(".");
@@ -128,19 +109,8 @@ export class ReportComponent {
     this.speseTotaliPerCategoria_Anno();
     this.speseTotaliPerCategoria(1);
     this.speseTotaliPerCategoria(2);
-    this.speseTotaliPerAnno();
   }
 
-  openDialog() {
-    this.dialog.open(DialogComponent, {
-      width:'50%',
-      data: {
-        categoria: this.currentCat,
-        anno: this.anno.value
-      },
-    });
-  }
-  
   public downloadBlobs(name: string) {
     name = this.user.userDetails+"/"+name;  //IL NOME è DEL TIPO utente/nomeBlob
     this.blobService.downloadBlob(name, this.sas, blob => {
@@ -208,26 +178,6 @@ export class ReportComponent {
     return ret;
   }
 
-  async speseTotaliPerAnno(): Promise<number[]> {
-    let utente = await this.utenteService.getUtente();
-    let ret:any[] = [];
-    this.databaseService.spesePerAnno(2019, 2023,utente).subscribe({
-      next: (res:any[]) => {
-        this.barChartData = [
-          { data: res,
-            backgroundColor: ['green','#FF6384', '#36A2EB', '#FFCE56', '#FF9F40'], // Colori accesi per le barre
-            hoverBackgroundColor: ['green','#FF6384', '#36A2EB', '#FFCE56', '#FF9F40'], // Colori accesi per il mouse hover sulle barre
-            borderColor: ['green','#FF6384', '#36A2EB', '#FFCE56', '#FF9F40'],
-            borderWidth: 3 
-          }
-        ];
-      },
-      error: (err:any) => {
-        console.error(err);
-      }
-    });
-    return ret;
-  }
   
   public async ricercaConFiltri(){
     let utente = await this.utenteService.getUtente();
