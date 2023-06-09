@@ -130,6 +130,9 @@ export class ReportComponent {
         else{
           this.doughnutChartData2 = [
             { data: res,
+              backgroundColor: ['green','#FFCE56', 'red', 'lightblue'], // Colori accesi per le barre
+              hoverBackgroundColor: ['green','#FFCE56', 'red', 'lightblue'], // Colori accesi per il mouse hover sulle barre
+              borderColor: ['green','#FFCE56', 'red', 'lightblue'],
             }
           ];
         }
@@ -149,6 +152,9 @@ export class ReportComponent {
       next: (res) => {
         this.pieChartData = [
           { data: res,
+            backgroundColor: ['green','#FF6384', '#36A2EB', '#FFCE56'], // Colori accesi per le barre
+            hoverBackgroundColor: ['green','#FF6384', '#36A2EB', '#FFCE56'], // Colori accesi per il mouse hover sulle barre
+            borderColor: ['green','#FF6384', '#36A2EB', '#FFCE56'],
           }
         ];
       },

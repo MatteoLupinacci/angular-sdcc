@@ -158,50 +158,46 @@
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
               </table>
-              <mat-paginator [pageSizeOptions]="[8,12]"></mat-paginator>
+              <mat-paginator [pageSizeOptions]="[6,8]"></mat-paginator>
             </div>
+          </div>
+        </div>
+
+        <div class="grid-item">
+          <div class="barraDiRicerca">
+            <mat-card style="background-color: rgba(255, 255, 255, 0.924)">
+              
+              <h2 style="margin-top: 2%;text-align: center;">Seleziona la categoria</h2>
+              <mat-form-field class="form-ricerca" appearance="outline" floatLabel="always">
+                <mat-label>Categoria</mat-label>
+                <mat-select [(value)]="currentCat">
+                  <mat-option *ngFor="let cat of categorie" [value]="cat">{{cat}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <h2 style="text-align: center;">Seleziona l'anno</h2>
+              <mat-form-field class="form-ricerca" appearance="outline">
+                <mat-label>Anno</mat-label>
+                <input type="number" [formControl]="annoRic" matInput placeholder="Anno">
+              </mat-form-field>
+              <h2 style="text-align: center;">Importo massimo</h2>
+              <mat-form-field class="form-ricerca" appearance="outline">
+                <mat-label>Importo</mat-label>
+                <input [formControl]="currentPrz" type="number" matInput placeholder="Importo">
+              </mat-form-field>
+            
+            <button style="width: fit-content; margin-left: 40%; margin-bottom: 2%;" mat-raised-button
+            (click)="ricercaConFiltri()" color="warn">CERCA</button>
+          </mat-card>
           </div>
         </div>
       </div>
 
-      <div class="ricercaConFiltri">
-        <div class="barraDiRicerca">
-          <mat-grid-list cols="3" rowHeight="180px">
-            <mat-grid-tile>
-              <div>
-                <h2>Seleziona la categoria</h2>
-                <mat-form-field appearance="outline" floatLabel="always">
-                  <mat-label>Categoria</mat-label>
-                  <mat-select [(value)]="currentCat">
-                    <mat-option *ngFor="let cat of categorie" [value]="cat">{{cat}}</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-              <div>
-                <h2>Seleziona l'anno</h2>
-                <mat-form-field appearance="outline">
-                  <mat-label>Anno</mat-label>
-                  <input [formControl]="annoRic" type="number" matInput placeholder="Anno">
-                </mat-form-field>
-              </div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-              <div>
-                <h2>Importo massimo</h2>
-                <mat-form-field appearance="outline">
-                  <mat-label>Importo massimo</mat-label>
-                  <input [formControl]="currentPrz" type="number" matInput placeholder="Importo">
-                </mat-form-field>
-                <button mat-raised-button (click)="ricercaConFiltri()" color="warn"
-                  style="margin-left: 8px;">CERCA</button>
-              </div>
-            </mat-grid-tile>
-          </mat-grid-list>
-        </div>
-
         <div class="card-container">
+          <div *ngIf="pageSlice.length === 0">
+            <h2 style="align-items: center;">
+              Non ci sono documenti che corrispondono ai filtri della tua ricerca
+            </h2>
+          </div>
           <div *ngFor="let documento of pageSlice;">
             <div class="card-content">
               <img class="custom-img" [src]="selezionaImm(documento.id)">
@@ -221,7 +217,7 @@
         <mat-paginator class="pagination-container" [length]="this.retRicerca.length" [pageSize]="6"
           [pageSizeOptions]="[6,12]" (page)="this.onPageChange($event)">
         </mat-paginator>
-      </div>
+     
      
     </div>
   </div>
